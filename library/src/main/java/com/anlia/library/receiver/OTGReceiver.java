@@ -39,10 +39,10 @@ public class OTGReceiver extends BroadcastReceiver {
                     if (usbDevice != null) {
                         mListener.onGranted();
                     }else {
-                        mListener.onError(-1,"获取USB设备失败！");
+                        mListener.onError(-1,"获取USB设备失败");
                     }
                 } else {
-                    mListener.onError(-2,"获取USB设备权限失败！");
+                    mListener.onError(-2,"获取USB设备权限失败");
                 }
             }
         } else if (action.equals(UsbManager.ACTION_USB_ACCESSORY_DETACHED)) {//设备连接中断
@@ -60,7 +60,7 @@ public class OTGReceiver extends BroadcastReceiver {
                 }
             }else {
                 isGranted = false;
-                mListener.onError(-4,"连接的设备不符合要求！");
+                mListener.onError(-4,"连接的设备不符合要求");
             }
         }else if(action.equals(UsbManager.ACTION_USB_DEVICE_DETACHED)){//设备拔出
             mListener.onDetached();

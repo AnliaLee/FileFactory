@@ -16,117 +16,6 @@ import java.util.List;
  */
 public class SDCardUtil {
 	public static final String TAG = "SDCardUtil";
-
-
-	/**
-	 * 获取所有SD卡根路径列表
-	 * @return
-	 */
-	public static List<String> getSDCardRootPathList(Context context){
-		List<String> pathList = getWritableVolumePaths(context);
-		final String defaultPath = getDefaultSDCardRootPath(context);
-
-		if (pathList.isEmpty()) {
-			if (!TextUtils.isEmpty(defaultPath)) {
-				pathList.add(defaultPath);
-			}
-		}
-		return pathList;
-	}
-	
-	/**
-	 * 获取所有SD卡根路径列表
-	 * @return
-	 */
-	public static List<String> getSDCardRootPathList(Context context, String filePath){
-		List<String> pathList = getWritableVolumePaths(context,filePath);
-		final String defaultPath = getDefaultSDCardRootPath(context);
-		
-		if (pathList.isEmpty()) {
-			if (!TextUtils.isEmpty(defaultPath)) {
-				pathList.add(defaultPath);
-			}
-		}
-		return pathList;
-	}
-	
-	/**
-	 * 获取默认SD卡根路径
-	 * @return
-	 */
-	@SuppressWarnings("unused")
-	public static String getDefaultSDCardRootPath(Context context) {
-		File file = new File(Environment
-				.getExternalStorageDirectory().getAbsolutePath() + "/");
-		if (file != null) {
-			List<String> pathList = getWritableVolumePaths(context);
-			String path = file.getAbsolutePath();
-			for (String aPath : pathList) {
-				if (path.startsWith(aPath)) {
-					return aPath;
-				}
-			}
-		} else {
-			if (Environment.getExternalStorageDirectory() == null) {
-				return "";
-			} else {
-				return Environment.getExternalStorageDirectory().getPath();
-			}
-		}
-		return "";
-	}
-
-	/**
-	 * 反射调用api，获取所有存储器路径列表
-	 * 获取sdcard的路径：外置和内置
-	 */
-	private static List<String> getWritableVolumePaths(Context context) {
-		String[] paths = null;
-		try {
-			StorageManager sm = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
-			paths = (String[]) sm.getClass().getMethod("getVolumePaths", new Class[0]).invoke(sm, new Object[]{});
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
-
-		}
-
-		List<String> writablePaths = new ArrayList<String>();
-		if (paths != null && paths.length > 0) {
-			for (String path : paths) {
-				File file = new File(path);
-				if (canWrite(file) && file.canRead() && getTotalSize(path) > 0) {
-					writablePaths.add(path);
-				}
-			}
-		}
-		return writablePaths;
-	}
-	
-	/**
-	 * 反射调用api，获取所有存储器路径列表
-	 * 获取sdcard的路径：外置和内置
-	 */
-	private static List<String> getWritableVolumePaths(Context context, String filePath) {
-		String[] paths = null;
-		try {
-			StorageManager sm = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
-			paths = (String[]) sm.getClass().getMethod("getVolumePaths", new Class[0]).invoke(sm, new Object[]{});
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
-
-		}
-
-		List<String> writablePaths = new ArrayList<String>();
-		if (paths != null && paths.length > 0) {
-			for (String path : paths) {
-				String path2 = path + filePath;
-				File file = new File(path2);
-				if (canWrite(file) && file.canRead() && getTotalSize(path2) > 0) {
-					writablePaths.add(path);
-				}
-			}
-		}
-		return writablePaths;
-	}
-	
 	public static boolean canWrite(final File file) {
 		if (file == null || !file.exists()) {
 			return false;
@@ -136,7 +25,6 @@ public class SDCardUtil {
 		result = file.canWrite();
 		return result;
 	}
-
 
 	/**
 	 * 获取磁盘空间信息

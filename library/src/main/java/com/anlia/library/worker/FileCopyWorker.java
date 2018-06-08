@@ -103,29 +103,29 @@ public class FileCopyWorker {
     public void execute(FileFactory.OnFileCopyListener listener){
         mListener = listener;
         if(mFromPath == null){
-            mListener.onFail(-1,"需调用from方法指定源文件!");
+            mListener.onFail(-1,"需指定源文件");
             return;
         }
 
         if(mToDir == null){
-            mListener.onFail(-2,"需调用toDir方法设置目标目录!");
+            mListener.onFail(-2,"需设置目标路径");
             return;
         }
 
         mFromFile = new File(mFromPath);
         if (!mFromFile.exists()) {
-            mListener.onFail(-3,"源文件不存在!");
+            mListener.onFail(-3,"源文件不存在");
             return;
         }
 
         try {
             if(FileSizeUtil.getFileOrFilesSize(mFromPath,3) > SDCardUtil.getAvailableSize(mToDir)){
-                mListener.onFail(-4,"空间不足!");
+                mListener.onFail(-4,"空间不足");
                 return;
             }
         }catch (Exception e){
             e.printStackTrace();
-            mListener.onFail(-99,"发生未知错误!");
+            mListener.onFail(-99,"发生未知错误");
             return;
         }
 
@@ -136,7 +136,7 @@ public class FileCopyWorker {
         }
         mToFile = new File(mToPath);
         if (FileUtil.isFileExists(mToFile) && !mIsCover) {
-            mListener.onFail(-5,"目标目录下已存在同名文件!");
+            mListener.onFail(-5,"目标目录下已存在同名文件");
             return;
         }
 
@@ -197,7 +197,7 @@ public class FileCopyWorker {
         if(!uriString.equals(toDirString)){
             switch (mListener.onPathDifference()){
                 case FileFactory.EVENT_TO_FAIL:
-                    mListener.onFail(-6,"创建文件失败！");
+                    mListener.onFail(-6,"创建文件失败");
                     return;
                 case FileFactory.EVENT_TO_RESELECT:
                     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -206,7 +206,7 @@ public class FileCopyWorker {
                 case FileFactory.EVENT_TO_CONTINUE:
                     break;
                 default:
-                    mListener.onFail(-7,"动作错误！");
+                    mListener.onFail(-7,"动作错误");
                     return;
             }
         }
@@ -230,7 +230,7 @@ public class FileCopyWorker {
                         if(isComplete){
                             mListener.onSuccess();
                         }else {
-                            mListener.onFail(-8,"创建文件失败！");
+                            mListener.onFail(-8,"创建文件失败");
                         }
                     }
                 });
