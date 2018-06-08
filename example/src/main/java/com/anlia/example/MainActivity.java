@@ -18,7 +18,6 @@ import com.anlia.library.utils.FileSizeUtil;
 import com.anlia.library.utils.FileUtil;
 import com.anlia.library.utils.SDCardUtil;
 import com.anlia.library.utils.ScanDirectoryUtil;
-import com.anlia.library.worker.FileCopyWorker;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -80,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 FileFactory.addJob_CopyFile(MainActivity.this)
                         .from("/storage/EC95-4FBB/学习/郭静_心墙.mp3")
                         .to(toDir + File.separator + "郭静_心墙.mp3",true)
-                        .execute(new FileCopyWorker.OnFileCopyListener() {
+                        .execute(new FileFactory.OnFileCopyListener() {
                             @Override
                             public void onSuccess() {
                                 Log.e(TAG,"创建文件成功！");
@@ -90,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onFail(int errorCode, String errorInfo) {
                                 Log.e(TAG,errorInfo);
+                            }
+
+                            @Override
+                            public int onPathDifference() {
+                                return 2;
                             }
                         });
             }

@@ -12,6 +12,7 @@ import com.anlia.library.utils.FileUtil;
 import com.anlia.library.utils.SDCardUtil;
 
 import java.io.File;
+import java.net.URLDecoder;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -29,7 +30,7 @@ public class FileCopyWorker {
     private Uri usbFileTreeUri;
     private File mFromFile;
     private File mToFile;
-    private OnFileCopyListener mListener;
+    private FileFactory.OnFileCopyListener mListener;
 
     private String mFromPath;
     private String mToDir;
@@ -99,7 +100,7 @@ public class FileCopyWorker {
         return getInstance();
     }
 
-    public void execute(OnFileCopyListener listener){
+    public void execute(FileFactory.OnFileCopyListener listener){
         mListener = listener;
         if(mFromPath == null){
             mListener.onFail(-1,"需调用from方法指定源文件!");
@@ -180,6 +181,36 @@ public class FileCopyWorker {
         if(mListener == null){
             return;
         }
+
+        String toDirString = mToDir.replace("/storage/","")
+                .replace("/","");
+
+        String uriString = URLDecoder.decode(uri.toString()).replace("content://com.android.externalstorage.documents/tree/","");
+
+        String rootDir = uriString.substring(0,uriString.indexOf(":"));
+
+        uriString = uriString.replace("content://com.android.externalstorage.documents/tree/","")
+                .replace(":","")
+                .replace("/","")
+                + toDirString.replace(rootDir,"");
+
+        if(!uriString.equals(toDirString)){
+            switch (mListener.onPathDifference()){
+                case FileFactory.EVENT_TO_FAIL:
+                    mListener.onFail(-6,"创建文件失败！");
+                    return;
+                case FileFactory.EVENT_TO_RESELECT:
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                    mActivity.startActivityForResult(intent, FileFactory.CODE_REQUEST_OPEN_DOCUMENT_TREE);
+                    return;
+                case FileFactory.EVENT_TO_CONTINUE:
+                    break;
+                default:
+                    mListener.onFail(-7,"动作错误！");
+                    return;
+            }
+        }
+
         usbFileTreeUri = uri;//保存TreeUri，下次无需再申请
         Observable.create(
                 new ObservableOnSubscribe<Boolean>() {
@@ -199,14 +230,9 @@ public class FileCopyWorker {
                         if(isComplete){
                             mListener.onSuccess();
                         }else {
-                            mListener.onFail(-6,"创建文件失败！");
+                            mListener.onFail(-8,"创建文件失败！");
                         }
                     }
                 });
-    }
-
-    public interface OnFileCopyListener{
-        void onSuccess();//拷贝文件成功
-        void onFail(int errorCode, String errorInfo);//拷贝文件失败
     }
 }

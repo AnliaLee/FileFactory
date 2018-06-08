@@ -136,9 +136,32 @@ public class FileFactory {
 
         /**
          * 发生错误时的回调
-         * @param errorCode
-         * @param errorInfo
+         * @param errorCode 错误码
+         * @param errorInfo 错误信息
          */
         void onError(int errorCode, String errorInfo);
+    }
+
+    public static final int EVENT_TO_FAIL = 1;
+    public static final int EVENT_TO_RESELECT = 2;
+    public static final int EVENT_TO_CONTINUE = 3;
+
+    public interface OnFileCopyListener{
+        void onSuccess();//拷贝文件成功
+
+        /**
+         * 拷贝文件失败的回调
+         * @param errorCode 错误码
+         * @param errorInfo 错误信息
+         */
+        void onFail(int errorCode, String errorInfo);
+
+        /**
+         * 当用户授权的路径与目标路径不一致时的回调，根据返回决定接下来的动作
+         * @return {@link #EVENT_TO_FAIL 返回错误回调}
+         *         {@link #EVENT_TO_RESELECT 让用户重新进行授权}
+         *         {@link #EVENT_TO_CONTINUE 无须理会，继续复制文件}
+         */
+        int onPathDifference();
     }
 }
