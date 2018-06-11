@@ -78,7 +78,45 @@ public class ScanDirectoryUtil {
             }
         }
         if (paths.isEmpty()) paths.add("/storage/sdcard1");
+
+        //兼容vivo手机挂载otg设备的目录
+        for (File file : scanFiles(new File("/storage/otg"))) {
+            if (file != null) {
+                String path = file.getAbsolutePath();
+                if(path.indexOf("/sd")!=-1){
+                    continue;
+                }
+                try {
+                    path = new File(path).getCanonicalPath();
+                } catch (IOException e) {
+                    // Keep non-canonical path.
+                }
+                paths.add(path);
+            }
+        }
         return paths.toArray(new String[0]);
+    }
+
+    public static List<String> scanSdCardForActivity(Activity context){
+        List<String> list = new ArrayList<>();
+        if (SDK_INT >= Build.VERSION_CODES.M && checkStoragePermission(context)){
+            list.clear();
+        }
+        if (SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            String strings[] = scanExtSdCardPathsForActivity(context);
+            for (String s : strings) {
+                File f = new File(s);
+                if (!list.contains(s) && canListFiles(f)) {
+                    list.add(s);
+                }
+            }
+        }
+        if (SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (isUsbDeviceConnected(context)) {
+//                list.add(PREFIX_OTG + "/");
+            }
+        }
+        return list;
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -101,6 +139,22 @@ public class ScanDirectoryUtil {
             }
         }
         if (paths.isEmpty()) paths.add("/storage/sdcard1");
+
+        //兼容vivo手机挂载otg设备的目录
+        for (File file : scanFiles(new File("/storage/otg"))) {
+            if (file != null) {
+                String path = file.getAbsolutePath();
+                if(path.indexOf("/sd")!=-1){
+                    continue;
+                }
+                try {
+                    path = new File(path).getCanonicalPath();
+                } catch (IOException e) {
+                    // Keep non-canonical path.
+                }
+                paths.add(path);
+            }
+        }
         return paths.toArray(new String[0]);
     }
 

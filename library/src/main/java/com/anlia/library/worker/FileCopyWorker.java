@@ -182,7 +182,8 @@ public class FileCopyWorker {
             return;
         }
 
-        String toDirString = mToDir.replace("/storage/","")
+        String toDirString = mToDir.replace("/storage/otg/","")//兼容vivo手机挂载otg设备的目录
+                .replace("/storage/","")
                 .replace("/","");
 
         String uriString = URLDecoder.decode(uri.toString()).replace("content://com.android.externalstorage.documents/tree/","");

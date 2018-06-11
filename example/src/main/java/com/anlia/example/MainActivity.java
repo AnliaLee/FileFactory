@@ -76,24 +76,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                mkFile = new File(toDir + File.separator + "蜂背文档.txt");
+                String fromPath = "/storage/otg/EC95-4FBB/学习/郭静_心墙.mp3";
                 FileFactory.addJob_CopyFile(MainActivity.this)
-                        .from("/storage/EC95-4FBB/学习/郭静_心墙.mp3")
-                        .to(toDir + File.separator + "郭静_心墙.mp3",true)
+                        .from(fromPath)
+                        .to(toDir + File.separator + "郭静_心墙.mp3",false)
                         .execute(new FileFactory.OnFileCopyListener() {
                             @Override
                             public void onSuccess() {
                                 Log.e(TAG,"创建文件成功！");
+                                Toast.makeText(MainActivity.this, "创建文件成功", Toast.LENGTH_SHORT).show();
                                 refreshFileList(new File(toDir));
                             }
 
                             @Override
                             public void onFail(int errorCode, String errorInfo) {
                                 Log.e(TAG,errorInfo);
+                                Toast.makeText(MainActivity.this, "errorInfo", Toast.LENGTH_SHORT).show();
+                                textPath.setText(errorInfo);
                             }
 
                             @Override
                             public int onPathDifference() {
-                                return 2;
+                                return FileFactory.EVENT_TO_RESELECT;
                             }
                         });
             }
@@ -105,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
             public void onGranted(List<FileModel> fileList) {
                 Log.e(TAG,"连接成功");
                 for (FileModel model:fileList){
-
                     Log.e(TAG,"设备列表：" + model.getFileName());
                 }
                 refreshSDList();
@@ -133,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 initList();
             }
         });
-        refreshSDList();
+//        refreshSDList();
 //        for (UsbDevice usbDevice : usbManager.getDeviceList().values()) {
 //            if (hasPermission(usbDevice)) {
 //                //读取usbDevice里的内容
